@@ -8,6 +8,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email_notifications = models.BooleanField(default=True)
+    avatar = models.ImageField(upload_to="users/profile-pictures", blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
