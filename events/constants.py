@@ -1,0 +1,2 @@
+
+EVENT_STATUSES_EXCLUDED_IN_LIST = ['Draft', 'Canceled']
