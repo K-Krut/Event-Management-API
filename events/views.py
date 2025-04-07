@@ -1,5 +1,6 @@
 from rest_framework import generics, status, filters
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from events.models import Event
 from events.serializers import EventSerializer
@@ -21,9 +22,48 @@ class EventListView(generics.ListAPIView):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title']
 
-
     def get_queryset(self):
         try:
             return Event.objects.exclude(status__name__in=['Draft', 'Canceled']).order_by(*self.ordering)
+        except Exception as error:
+            return Response({'errors': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class EventMyListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EventSerializer
+
+    pagination_class = Pagination
+    ordering_fields = ['title', 'date_start', 'date_end', 'status']
+    ordering = ['date_start', 'status']
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title']
+
+    def get_queryset(self):
+        try:
+            return Event.objects.exclude(status__name__in=['Draft', 'Canceled']).filter(
+                event__user=self.request.user).order_by(*self.ordering)
+        except Exception as error:
+            return Response({'errors': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class EventMyOrganizedListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EventSerializer
+
+    pagination_class = Pagination
+    ordering_fields = ['title', 'date_start', 'date_end', 'status']
+    ordering = ['date_start', 'status']
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title']
+
+    def get_queryset(self):
+        try:
+            return (
+                Event.objects.exclude(status__name__in=['Draft', 'Canceled']).filter(
+                    organizer=self.request.user).order_by(*self.ordering)
+            )
         except Exception as error:
             return Response({'errors': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
