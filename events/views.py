@@ -16,7 +16,7 @@ class EventListView(generics.ListAPIView):
 
     pagination_class = Pagination
     ordering_fields = ['title', 'date_start', 'date_end', 'status']
-    ordering = ['-date_start', 'status']
+    ordering = ['date_start', 'status']
 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title']
