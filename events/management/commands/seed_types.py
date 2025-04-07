@@ -10,9 +10,9 @@ class Command(BaseCommand):
     help = 'Seed data for EventTypes Model'
 
     def handle(self, *args, **kwargs):
-        for status_name in event_types_data:
+        for event_type in event_types_data:
             EventType.objects.create(
-                name=status_name
+                name=event_type
             )
 
         self.stdout.write(self.style.SUCCESS(f'Successfully generated data entries'))
