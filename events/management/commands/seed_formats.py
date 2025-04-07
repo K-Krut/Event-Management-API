@@ -1,15 +1,14 @@
 from django.core.management.base import BaseCommand
+
+from events.constants import EVENT_FORMATS
 from events.models import EventFormat
-
-
-formats_data = ["Online", "Offline", "Hybrid",]
 
 
 class Command(BaseCommand):
     help = 'Seed data for EventFormats Model'
 
     def handle(self, *args, **kwargs):
-        for event_format in formats_data:
+        for event_format in EVENT_FORMATS:
             EventFormat.objects.create(
                 name=event_format
             )

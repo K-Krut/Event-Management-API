@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand
+
+from events.constants import EVENT_STATUSES
 from events.models import EventStatus
-
-
-statuses_data = ['Draft', 'Active', 'Upcoming', 'Ongoing', 'Canceled', 'Finished']
 
 
 class Command(BaseCommand):
@@ -10,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        for status_name in statuses_data:
+        for status_name in EVENT_STATUSES:
             EventStatus.objects.create(
                 name=status_name
             )
