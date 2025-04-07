@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 
 from events.constants import EVENT_STATUSES_ALLOWED_FOR_CREATE, EVENT_FORMATS_WITH_REQUIRED_LOCATION, \
     EVENT_FORMATS_WITHOUT_LOCATION
-from events.models import Event, EventParticipants
+from events.models import Event, EventParticipants, EventStatus, EventType, EventFormat
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -52,9 +52,33 @@ class EventCreateSerializer(serializers.ModelSerializer):
         return data
 
 
+class EventOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['id', 'name']
+
+
+class EventStatusSerializer(EventOptionSerializer):
+    class Meta(EventOptionSerializer.Meta):
+        model = EventStatus
+
+
+class EventFormatSerializer(EventOptionSerializer):
+    class Meta(EventOptionSerializer.Meta):
+        model = EventFormat
+
+
+class EventTypeSerializer(EventOptionSerializer):
+    class Meta(EventOptionSerializer.Meta):
+        model = EventType
+
+
 class EventDetailsSerializer(serializers.ModelSerializer):
     is_registered = serializers.SerializerMethodField()
     participants_number = serializers.SerializerMethodField()
+
+    status = EventStatusSerializer(read_only=True)
+    type = EventTypeSerializer(read_only=True)
+    format = EventFormatSerializer(read_only=True)
 
     class Meta:
         model = Event
