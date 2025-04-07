@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'storages',
 
     'users.apps.UsersConfig',
+    'events.apps.EventsConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
