@@ -79,7 +79,7 @@ class UserLoginSerializer(serializers.Serializer):
         }
 
 
-class UserSerializer(serializers.Serializer):
+class UserSerializer(serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
 
     class Meta:
