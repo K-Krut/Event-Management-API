@@ -60,3 +60,6 @@ class EventDetailView(APIView):
         response = self.serializer_class(event, context={'request': request})
         return Response(response.data, status=status.HTTP_200_OK)
 
+
+class EventParticipantsView(generics.ListAPIView):
+    pass
