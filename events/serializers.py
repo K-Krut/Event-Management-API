@@ -7,6 +7,30 @@ from events.models import Event, EventParticipants, EventStatus, EventType, Even
 from users.serializers import UserSerializer
 
 
+class EventOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['id', 'name']
+
+
+class EventStatusSerializer(EventOptionSerializer):
+    class Meta(EventOptionSerializer.Meta):
+        model = EventStatus
+
+
+class EventFormatSerializer(EventOptionSerializer):
+    class Meta(EventOptionSerializer.Meta):
+        model = EventFormat
+
+
+class EventTypeSerializer(EventOptionSerializer):
+    class Meta(EventOptionSerializer.Meta):
+        model = EventType
+
+
+class ParticipantSerializer(UserSerializer):
+    pass
+
+
 class EventSerializer(serializers.ModelSerializer):
     is_registered = serializers.SerializerMethodField()
 
@@ -53,26 +77,6 @@ class EventCreateSerializer(serializers.ModelSerializer):
         return data
 
 
-class EventOptionSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ['id', 'name']
-
-
-class EventStatusSerializer(EventOptionSerializer):
-    class Meta(EventOptionSerializer.Meta):
-        model = EventStatus
-
-
-class EventFormatSerializer(EventOptionSerializer):
-    class Meta(EventOptionSerializer.Meta):
-        model = EventFormat
-
-
-class EventTypeSerializer(EventOptionSerializer):
-    class Meta(EventOptionSerializer.Meta):
-        model = EventType
-
-
 class EventDetailsSerializer(serializers.ModelSerializer):
     is_registered = serializers.SerializerMethodField()
     participants_number = serializers.SerializerMethodField()
@@ -80,7 +84,7 @@ class EventDetailsSerializer(serializers.ModelSerializer):
     status = EventStatusSerializer(read_only=True)
     type = EventTypeSerializer(read_only=True)
     format = EventFormatSerializer(read_only=True)
-    organizer = UserSerializer(read_only=True)
+    organizer = ParticipantSerializer(read_only=True)
 
     class Meta:
         model = Event
