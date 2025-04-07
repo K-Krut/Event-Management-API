@@ -50,3 +50,23 @@ class EventCreateSerializer(serializers.ModelSerializer):
             raise ValidationError('Event\'s Date Start must be before Date End')
 
         return data
+
+
+class EventDetailsSerializer(serializers.ModelSerializer):
+    is_registered = serializers.SerializerMethodField()
+    participants_number = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Event
+        fields = [
+            'id', 'title', 'date_start', 'date_end', 'description', 'location', 'status', 'format', 'type',
+            'is_registered', 'participants_number', 'organizer'
+        ]
+
+    def get_is_registered(self, obj):
+        user = self.context['request'].user
+        return False if not user.is_authenticated else EventParticipants.objects.filter(user=user, event=obj).exists()
+
+    def get_participants_number(self, obj):
+        return EventParticipants.objects.filter(event=obj).count()
+
