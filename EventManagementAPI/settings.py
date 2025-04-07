@@ -3,7 +3,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import sys
-print("PYTHONPATH:", sys.path)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
