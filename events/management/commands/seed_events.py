@@ -33,7 +33,7 @@ class Command(BaseCommand):
         for _ in range(num_entries):
             event_format = random.choice(formats)
             dates = random_dates_within_month(2025, 4)
-            location = None if event_format == "Online" else fake.address()
+            location = None if event_format.name == "Online" else fake.address()
             organizer = random.choice(User.objects.all())
 
             event = Event.objects.create(
