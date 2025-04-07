@@ -3,16 +3,22 @@ from django.db import models
 from users.models import User
 
 
-class Type(models.Model):
+class EventType(models.Model):
     name = models.CharField(unique=True, max_length=100)
 
     def __str__(self):
         return self.name
 
 
-
-class Status(models.Model):
+class EventStatus(models.Model):
     name = models.CharField(unique=True, max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class EventFormat(models.Model):
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
@@ -24,9 +30,10 @@ class Event(models.Model):
     description = models.TextField()
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
-    location = models.CharField(max_length=255)
-    status = models.ForeignKey(Status, on_delete=models.PROTECT,  related_name='events')
-    type = models.ForeignKey(Type, on_delete=models.PROTECT,  related_name='events')
+    location = models.CharField(max_length=255, blank=True, null=True)
+    status = models.ForeignKey(EventStatus, on_delete=models.PROTECT,  related_name='events')
+    format = models.ForeignKey(EventFormat, on_delete=models.PROTECT,  related_name='events')
+    type = models.ForeignKey(EventType, on_delete=models.PROTECT,  related_name='events')
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizer')
 
     created_at = models.DateTimeField(auto_now_add=True)
