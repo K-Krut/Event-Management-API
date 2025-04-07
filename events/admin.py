@@ -27,13 +27,16 @@ class EventFormatAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = [
-        'title', 'date_start', 'date_end', 'location', 'status', 'type', 'format',
+        'title', 'date_start', 'date_end', 'location', 'status', 'type', 'format', 'participants_count',
         'organizer', 'created_at'
     ]
     list_filter = ['status', 'type', 'format', 'date_start', 'date_end']
     search_fields = ['title', 'description']
     ordering = ['status', 'date_start', 'type', 'created_at']
     show_facets = admin.ShowFacets.ALWAYS
+
+    def participants_count(self, obj):
+        return obj.event.count()
 
 
 @admin.register(EventParticipants)
