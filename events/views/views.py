@@ -1,12 +1,14 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from events.constants import EVENT_STATUSES_EXCLUDED_IN_LIST
-from events.decorators import server_exception
+from events.decorators import server_exception, event_exceptions, organizer_required
 from events.models import Event, EventParticipants
-from events.serializers import EventCreateSerializer
-from events.views.mixins import EventListMixin
+from events.serializers import EventCreateSerializer, EventDetailsSerializer, ParticipantSerializer, \
+    EventParticipantSerializer
+from events.views.mixins import EventListMixin, Pagination
 
 
 class EventListView(EventListMixin, generics.ListAPIView):
@@ -45,3 +47,33 @@ class EventCreateView(generics.CreateAPIView):
         EventParticipants.objects.create(event=event, user=user)
         # response = EventSerializer(event, context={'request': self.request})
         return Response(event, status=status.HTTP_201_CREATED)
+
+
+class EventDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EventDetailsSerializer
+
+    @event_exceptions
+    def get(self, request, *args, **kwargs):
+        event_id = kwargs.get('id')
+        event = Event.objects.get(id=event_id)
+        response = self.serializer_class(event, context={'request': request})
+        return Response(response.data, status=status.HTTP_200_OK)
+
+
+class EventParticipantsView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = Pagination
+    serializer_class = EventParticipantSerializer
+
+    @organizer_required
+    @event_exceptions
+    def get(self, request, *args, **kwargs):
+        participants = EventParticipants.objects.filter(event=self.event).exclude(user=self.event.organizer)
+
+        return Response({
+            'participants_number': participants.count(),
+            'organizer': ParticipantSerializer(self.event.organizer).data,
+            'participants': self.serializer_class(participants, many=True).data,
+
+        }, status=status.HTTP_200_OK)

@@ -28,7 +28,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         return obj.avatar.url if obj.avatar else None
 
-
     def create(self, validated_data):
         user = User.objects.create_user(
             email=validated_data['email'],
@@ -75,6 +74,17 @@ class UserLoginSerializer(serializers.Serializer):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email_notifications': user.email_notifications,
-                "avatar_url": user.avatar.url
+                "avatar_url": user.avatar.url if user.avatar else None
             }
         }
+
+
+class UserSerializer(serializers.ModelSerializer):
+    avatar_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'avatar_url']
+
+    def get_avatar_url(self, obj):
+        return obj.avatar.url if obj.avatar else None
