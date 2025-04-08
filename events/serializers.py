@@ -31,6 +31,14 @@ class ParticipantSerializer(UserSerializer):
     pass
 
 
+class EventParticipantSerializer(serializers.ModelSerializer):
+    user = ParticipantSerializer(read_only=True)
+
+    class Meta:
+        model = EventParticipants
+        fields = ['user', 'registered_at']
+
+
 class EventSerializer(serializers.ModelSerializer):
     is_registered = serializers.SerializerMethodField()
 
