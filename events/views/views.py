@@ -1,13 +1,14 @@
 from rest_framework import generics, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from events.constants import EVENT_STATUSES_EXCLUDED_IN_LIST
-from events.decorators import server_exception, event_exceptions, organizer_required
+from events.decorators import server_exception, event_exceptions, organizer_required, event_editable
 from events.models import Event, EventParticipants
 from events.serializers import EventCreateSerializer, EventDetailsSerializer, ParticipantSerializer, \
-    EventParticipantSerializer
+    EventParticipantSerializer, EventUpdateSerializer
 from events.views.mixins import EventListMixin, Pagination
 
 
@@ -59,6 +60,21 @@ class EventDetailView(APIView):
         event = Event.objects.get(id=event_id)
         response = self.serializer_class(event, context={'request': request})
         return Response(response.data, status=status.HTTP_200_OK)
+
+    @event_exceptions
+    @organizer_required
+    @event_editable
+    def put(self, request, *args, **kwargs):
+        serializer = EventCreateSerializer(self.event, data=request.data)
+
+        if not serializer.is_valid():
+            raise ValidationError(serializer.errors)
+
+        event = serializer.save()
+        response = self.serializer_class(event, context={'request': request})
+        return Response(response.data, status=status.HTTP_200_OK)
+
+
 
 
 class EventParticipantsView(generics.ListAPIView):
