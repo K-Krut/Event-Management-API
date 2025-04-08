@@ -1,1 +1,1 @@
-web: gunicorn EventManagementAPI.wsgi --log-file -
+web: gunicorn EventManagementAPI.wsgi:application
