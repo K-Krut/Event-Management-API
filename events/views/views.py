@@ -74,7 +74,18 @@ class EventDetailView(APIView):
         response = self.serializer_class(event, context={'request': request})
         return Response(response.data, status=status.HTTP_200_OK)
 
+    @event_exceptions
+    @organizer_required
+    @event_editable
+    def patch(self, request, *args, **kwargs):
+        serializer = EventUpdateSerializer(self.event, data=request.data, partial=True)
 
+        if not serializer.is_valid():
+            raise ValidationError(serializer.errors)
+
+        event = serializer.save()
+        response = self.serializer_class(event, context={'request': request})
+        return Response(response.data, status=status.HTTP_200_OK)
 
 
 class EventParticipantsView(generics.ListAPIView):
