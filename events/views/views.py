@@ -12,6 +12,7 @@ from events.serializers import EventCreateSerializer, EventDetailsSerializer, Pa
 from events.views.mixins import EventListMixin, Pagination
 
 
+
 class EventListView(EventListMixin, generics.ListAPIView):
 
     @server_exception
@@ -87,6 +88,13 @@ class EventDetailView(APIView):
         event = serializer.save()
         response = self.serializer_class(event, context={'request': request})
         return Response(response.data, status=status.HTTP_200_OK)
+
+    @obj_exceptions
+    @organizer_required
+    @event_deletable
+    def delete(self, request, *args, **kwargs):
+        self.event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EventParticipantsView(generics.ListAPIView):
