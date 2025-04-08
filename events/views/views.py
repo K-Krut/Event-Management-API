@@ -42,12 +42,13 @@ class EventCreateView(generics.CreateAPIView):
     serializer_class = EventCreateSerializer
 
     @server_exception
-    def perform_create(self, serializer):
-        user = self.request.user
-        event = serializer.save(organizer=user)
-        EventParticipants.objects.create(event=event, user=user)
-        # response = EventSerializer(event, context={'request': self.request})
-        return Response(event, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        event = serializer.save(organizer=request.user)
+
+        EventParticipants.objects.create(event=event, user=request.user)
+        return Response(EventDetailsSerializer(event, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 
 class EventDetailView(APIView):
