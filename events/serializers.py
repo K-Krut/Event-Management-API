@@ -53,7 +53,6 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class EventCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Event
         fields = [
@@ -108,3 +107,30 @@ class EventDetailsSerializer(serializers.ModelSerializer):
     def get_participants_number(self, obj):
         return EventParticipants.objects.filter(event=obj).count()
 
+
+class EventUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = [
+            'title', 'date_start', 'date_end', 'description', 'location', 'status', 'type', 'format', 'organizer'
+        ]
+        read_only_fields = ['organizer']
+
+    def validate(self, data):
+        event_format = data.get('format', self.instance.format)
+        location = data.get('location', self.instance.location)
+
+        if event_format.name in EVENT_FORMATS_WITH_REQUIRED_LOCATION and not location:
+            raise ValidationError(f'location is required for {EVENT_FORMATS_WITH_REQUIRED_LOCATION} events')
+
+        if event_format.name in EVENT_FORMATS_WITHOUT_LOCATION and location:
+            raise ValidationError(f'location cant be added for {EVENT_FORMATS_WITHOUT_LOCATION} events')
+
+        instance = self.instance
+        date_start = data.get('date_start', instance.date_start)
+        date_end = data.get('date_end', instance.date_end)
+
+        if not date_start < date_end:
+            raise ValidationError('Event\'s Date Start must be before Date End')
+
+        return data
