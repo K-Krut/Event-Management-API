@@ -8,7 +8,7 @@ from events.constants import EVENT_STATUSES_EXCLUDED_IN_LIST
 from events.decorators import server_exception, obj_exceptions, organizer_required, event_editable
 from events.models import Event, EventParticipants, EventStatus, EventType, EventFormat
 from events.serializers import EventCreateSerializer, EventDetailsSerializer, ParticipantSerializer, \
-    EventParticipantSerializer, EventUpdateSerializer, EventStatusSerializer
+    EventParticipantSerializer, EventUpdateSerializer, EventStatusSerializer, EventFormatSerializer, EventTypeSerializer
 from events.views.mixins import EventListMixin, Pagination
 
 
@@ -115,3 +115,13 @@ class EventStatusesView(generics.ListAPIView):
     @server_exception
     def get_queryset(self):
         return EventStatus.objects.all()
+
+
+class EventFormatsView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = Pagination
+    serializer_class = EventFormatSerializer
+
+    @server_exception
+    def get_queryset(self):
+        return EventFormat.objects.all()
