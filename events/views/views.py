@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from events.constants import EVENT_STATUSES_EXCLUDED_IN_LIST
-from events.decorators import server_exception, obj_exceptions, organizer_required, event_editable
+from events.decorators import server_exception, obj_exceptions, organizer_required, event_editable, event_deletable
 from events.models import Event, EventParticipants, EventStatus, EventType, EventFormat
 from events.serializers import EventCreateSerializer, EventDetailsSerializer, ParticipantSerializer, \
     EventParticipantSerializer, EventUpdateSerializer, EventStatusSerializer, EventFormatSerializer, EventTypeSerializer
@@ -111,7 +111,6 @@ class EventParticipantsView(generics.ListAPIView):
             'participants_number': participants.count(),
             'organizer': ParticipantSerializer(self.event.organizer).data,
             'participants': self.serializer_class(participants, many=True).data,
-
         }, status=status.HTTP_200_OK)
 
 
