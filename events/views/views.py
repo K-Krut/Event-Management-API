@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 
 from events.constants import EVENT_STATUSES_EXCLUDED_IN_LIST
 from events.decorators import server_exception, obj_exceptions, organizer_required, event_editable
-from events.models import Event, EventParticipants
+from events.models import Event, EventParticipants, EventStatus, EventType, EventFormat
 from events.serializers import EventCreateSerializer, EventDetailsSerializer, ParticipantSerializer, \
-    EventParticipantSerializer, EventUpdateSerializer
+    EventParticipantSerializer, EventUpdateSerializer, EventStatusSerializer
 from events.views.mixins import EventListMixin, Pagination
 
 
@@ -105,3 +105,13 @@ class EventParticipantsView(generics.ListAPIView):
             'participants': self.serializer_class(participants, many=True).data,
 
         }, status=status.HTTP_200_OK)
+
+
+class EventStatusesView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = Pagination
+    serializer_class = EventStatusSerializer
+
+    @server_exception
+    def get_queryset(self):
+        return EventStatus.objects.all()
