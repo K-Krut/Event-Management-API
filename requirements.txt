@@ -10,11 +10,13 @@ djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 drf-spectacular==0.28.0
 Faker==37.1.0
+gunicorn==23.0.0
 idna==3.10
 inflection==0.5.1
 jmespath==1.0.1
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
+packaging==24.2
 pillow==11.1.0
 psycopg2-binary==2.9.10
 PyJWT==2.9.0
