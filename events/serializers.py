@@ -117,8 +117,8 @@ class EventUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ['organizer']
 
     def validate(self, data):
-        event_format = data.get('format', None)
-        location = data.get('location', None)
+        event_format = data.get('format', self.instance.format)
+        location = data.get('location', self.instance.location)
 
         if event_format.name in EVENT_FORMATS_WITH_REQUIRED_LOCATION and not location:
             raise ValidationError(f'location is required for {EVENT_FORMATS_WITH_REQUIRED_LOCATION} events')
