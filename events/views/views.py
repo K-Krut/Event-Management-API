@@ -125,3 +125,13 @@ class EventFormatsView(generics.ListAPIView):
     @server_exception
     def get_queryset(self):
         return EventFormat.objects.all()
+
+
+class EventTypesView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = Pagination
+    serializer_class = EventTypeSerializer
+
+    @server_exception
+    def get_queryset(self):
+        return EventType.objects.all()
