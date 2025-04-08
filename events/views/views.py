@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from events.constants import EVENT_STATUSES_EXCLUDED_IN_LIST
-from events.decorators import server_exception, obj_exceptions, organizer_required, event_editable
+from events.decorators import server_exception, obj_exceptions, organizer_required, event_editable, event_deletable
 from events.models import Event, EventParticipants
 from events.serializers import EventCreateSerializer, EventDetailsSerializer, ParticipantSerializer, \
     EventParticipantSerializer, EventUpdateSerializer
@@ -87,6 +87,13 @@ class EventDetailView(APIView):
         event = serializer.save()
         response = self.serializer_class(event, context={'request': request})
         return Response(response.data, status=status.HTTP_200_OK)
+
+    @obj_exceptions
+    @organizer_required
+    @event_deletable
+    def delete(self, request, *args, **kwargs):
+        self.event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EventParticipantsView(generics.ListAPIView):
