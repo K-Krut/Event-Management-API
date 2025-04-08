@@ -41,6 +41,7 @@ class EventParticipantSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     is_registered = serializers.SerializerMethodField()
+    status = EventStatusSerializer(read_only=True)
 
     class Meta:
         model = Event
