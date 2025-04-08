@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from functools import wraps
 
+from events.constants import EVENT_STATUSES_NOT_EDITABLE
 from events.models import Event
 
 
@@ -41,6 +42,17 @@ def organizer_required(func):
             return Response({'errors': 'Access forbidden'}, status=status.HTTP_403_FORBIDDEN)
 
         self.event = event
+        return func(self, request, *args, **kwargs)
+
+    return wrapper
+
+
+def event_editable(func):
+    @wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        if self.event.status.name in EVENT_STATUSES_NOT_EDITABLE:
+            return Response({'errors': 'Finished Events can\'t be updated'}, status=status.HTTP_400_BAD_REQUEST)
+
         return func(self, request, *args, **kwargs)
 
     return wrapper
