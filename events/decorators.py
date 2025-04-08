@@ -18,7 +18,7 @@ def server_exception(func):
     return wrapper
 
 
-def event_exceptions(func):
+def obj_exceptions(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         try:
