@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from functools import wraps
 
-from events.constants import EVENT_STATUSES_NOT_EDITABLE
-from events.models import Event
+from events.constants import EVENT_STATUSES_NOT_EDITABLE, EVENT_STATUSES_ACTIVE
+from events.models import Event, EventParticipants
 
 
 def server_exception(func):
@@ -52,6 +52,22 @@ def event_editable(func):
     def wrapper(self, request, *args, **kwargs):
         if self.event.status.name in EVENT_STATUSES_NOT_EDITABLE:
             return Response({'errors': 'Finished Events can\'t be updated'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return func(self, request, *args, **kwargs)
+
+    return wrapper
+
+
+def event_deletable(func):
+    @wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        if self.event.status.name in EVENT_STATUSES_NOT_EDITABLE:
+            return Response({'errors': 'Finished Events can\'t be deleted'}, status=status.HTTP_400_BAD_REQUEST)
+
+        participants = EventParticipants.objects.filter(event=self.event).exclude(user=self.event.organizer).exists()
+        if self.event.status.name in EVENT_STATUSES_ACTIVE and participants:
+            return Response({'errors': 'Active event with registered users can\'t be deleted'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         return func(self, request, *args, **kwargs)
 
